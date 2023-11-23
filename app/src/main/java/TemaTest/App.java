@@ -5,9 +5,12 @@ package TemaTest;
 
 public class App {
     
-public App() {/* compiled code */}
-
-    public static void main(java.lang.String[] strings) {
-        System.out.print("Hello world!");
+    public App() {}
+    public static void main(java.lang.String[] args) {
+        if (args == null) {
+            System.out.println("Hello world!");
+        }
+        Command c = new Command(args);
+        c.execute();
     }
 }
