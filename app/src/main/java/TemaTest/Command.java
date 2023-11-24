@@ -36,6 +36,27 @@ public class Command {
             if (this.args[0].equals("-like-post")) {
                 this.likePost();
             }
+            if (this.args[0].equals("-unlike-post")) {
+                this.unlikePost();
+            }
+            if (this.args[0].equals("-comment-post")) {
+                this.commentPost();
+            }
+            if (this.args[0].equals("-like-comment")) {
+                this.likeComment();
+            }
+            if (this.args[0].equals("-unlike-comment")) {
+                this.unlikeComment();
+            }
+            if (this.args[0].equals("-delete-comment-by-id")) {
+                this.deleteCommentById();
+            }
+            if (this.args[0].equals("-get-following")) {
+                this.getFollowing();
+            }
+            if (this.args[0].equals("-get-followers")) {
+                this.getFollowers();
+            }
         }
     }
     public void createUser() {
@@ -125,6 +146,92 @@ public class Command {
         String postId = this.args[3].split(" ")[1].replace("'", "");
         Post.like(user.getUsername(), postId);
     }
+    public void unlikePost() {
+        User user = this.verifyAuth();
+        if (user == null) {
+            return;
+        }
+        if (this.args.length < 4) {
+            System.out.println(new CommandResponse("error", "No post identifier to unlike was provided"));
+            return;
+        }
+        String postId = this.args[3].split(" ")[1].replace("'", "");
+        Post.unlike(user.getUsername(), postId);
+    }
+
+    public void commentPost() {
+        User user = this.verifyAuth();
+        if (user == null) {
+            return;
+        }
+        if (this.args.length < 4) {
+            System.out.println(new CommandResponse("error", "No text provided"));
+            return;
+        }
+        String postId = this.args[3].split(" ")[1].replace("'", "");
+        String text = this.args[4].split(" ",2)[1].replace("'", "");
+        Comment comment = new Comment(user.getUsername(), postId, text);
+        comment.createComment();
+    }
+
+    public void likeComment() {
+        User user = this.verifyAuth();
+        if (user == null) {
+            return;
+        }
+        if (this.args.length < 4) {
+            System.out.println(new CommandResponse("error", "No comment identifier to like was provided"));
+            return;
+        }
+        String commentId = this.args[3].split(" ")[1].replace("'", "");
+        Comment.like(user.getUsername(), commentId);
+    }
+
+    public void unlikeComment() {
+        User user = this.verifyAuth();
+        if (user == null) {
+            return;
+        }
+        if (this.args.length < 4) {
+            System.out.println(new CommandResponse("error", "No comment identifier to unlike was provided"));
+            return;
+        }
+        String commentId = this.args[3].split(" ")[1].replace("'", "");
+        Comment.unlike(user.getUsername(), commentId);
+    }
+    public void deleteCommentById() {
+        User user = this.verifyAuth();
+        if (user == null) {
+            return;
+        }
+        if (this.args.length < 4) {
+            System.out.println(new CommandResponse("error", "No identifier was provided"));
+            return;
+        }
+        String commentId = this.args[3].split(" ")[1].replace("'", "");
+        Comment comment = new Comment(user.getUsername(), commentId);
+        comment.deleteComment();
+    }
+    public void getFollowing() {
+        User user = this.verifyAuth();
+        if (user == null) {
+            return;
+        }
+        user.getFollowing();
+    }
+
+    public void getFollowers() {
+        User user = this.verifyAuth();
+        if (user == null) {
+            return;
+        }
+        if (this.args.length < 4) {
+            System.out.println(new CommandResponse("error", "No username to list followers was provided"));
+            return;
+        }
+        String userToList = this.args[3].split(" ")[1].replace("'", "");
+        user.getFollowers(userToList);
+    }
 
     public User verifyAuth() {
         if (this.args.length < 3 || !this.args[1].contains("-u") || !this.args[2].contains("-p")) {
@@ -165,8 +272,8 @@ public class Command {
 
         //clean posts.csv
         try (FileWriter fw = new FileWriter("posts.csv", false);
-             BufferedWriter bw = new BufferedWriter(fw);
-             PrintWriter out = new PrintWriter(bw)) {
+            BufferedWriter bw = new BufferedWriter(fw);
+            PrintWriter out = new PrintWriter(bw)) {
             out.println("Id,Username,Text");
         } catch (IOException e) {
             //empty
@@ -175,8 +282,8 @@ public class Command {
 
         //clean follow.csv
         try (FileWriter fw = new FileWriter("follow.csv", false);
-             BufferedWriter bw = new BufferedWriter(fw);
-             PrintWriter out = new PrintWriter(bw)) {
+            BufferedWriter bw = new BufferedWriter(fw);
+            PrintWriter out = new PrintWriter(bw)) {
             out.println("Follower,Followed");
         } catch (IOException e) {
             //empty
@@ -184,8 +291,8 @@ public class Command {
 
         //clean likesPosts.csv
         try (FileWriter fw = new FileWriter("likePosts.csv", false);
-             BufferedWriter bw = new BufferedWriter(fw);
-             PrintWriter out = new PrintWriter(bw)) {
+            BufferedWriter bw = new BufferedWriter(fw);
+            PrintWriter out = new PrintWriter(bw)) {
             out.println("Id,PostOwner,LikedBy");
         } catch (IOException e) {
             //empty
@@ -193,11 +300,21 @@ public class Command {
 
         //clean likesComments.csv
         try (FileWriter fw = new FileWriter("likeComments.csv", false);
-             BufferedWriter bw = new BufferedWriter(fw);
-             PrintWriter out = new PrintWriter(bw)) {
-            out.println("Follower,Followed");
+            BufferedWriter bw = new BufferedWriter(fw);
+            PrintWriter out = new PrintWriter(bw)) {
+            out.println("Id,PostOwner,LikedBy");
         } catch (IOException e) {
             //empty
         }
+
+        //clean comments.csv
+        try (FileWriter fw = new FileWriter("comments.csv", false);
+            BufferedWriter bw = new BufferedWriter(fw);
+            PrintWriter out = new PrintWriter(bw)) {
+            out.println("Id,PostId,Username,Text");
+        } catch (IOException e) {
+            //empty
+        }
+        Comment.setLastId(0);
     }
 }

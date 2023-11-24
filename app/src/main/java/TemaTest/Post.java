@@ -103,8 +103,8 @@ public class Post implements Likeable{
         System.out.println(new CommandResponse("ok", "Post added successfully"));
     }
     public static void like(String likedBy, String postId) {
-        //read from posts.csv
         String owner = null;
+        //read from posts.csv
         try (BufferedReader br = new BufferedReader(new FileReader("posts.csv"))) {
             String line;
             br.readLine();
@@ -146,6 +146,63 @@ public class Post implements Likeable{
              BufferedWriter bw = new BufferedWriter(fw);
              PrintWriter out = new PrintWriter(bw)) {
             out.println(postId + "," + owner + "," + likedBy);
+        } catch (IOException e) {
+            //empty
+        }
+        System.out.println(new CommandResponse("ok", "Operation executed successfully"));
+    }
+    public static void unlike(String unlikedBy, String postId) {
+        String owner = null;
+        //read from posts.csv
+        try (BufferedReader br = new BufferedReader(new FileReader("posts.csv"))) {
+            String line;
+            br.readLine();
+            boolean found = false;
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split(",");
+                if (data[0].equals(postId)) {
+                    found = true;
+                    owner = data[1];
+                }
+            }
+            if (!found) {
+                System.out.println(new CommandResponse("error", "The post identifier to unlike was not valid"));
+                return;
+            }
+        } catch (IOException e) {
+            //empty
+        }
+
+        //creating an array of all the likes of all the posts
+        ArrayList<String> likesPosts = new ArrayList<String>();
+        //read from likePosts.csv
+        try (BufferedReader br = new BufferedReader(new FileReader("likePosts.csv"))) {
+            String line;
+            br.readLine();
+            boolean found = false;
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split(",");
+                if (!(data[0].equals(postId) && data[2].equals(unlikedBy))) {
+                    likesPosts.add(line);
+                } else {
+                    found = true;
+                }
+            }
+            if (!found) {
+                System.out.println(new CommandResponse("error", "The post identifier to unlike was not valid"));
+                return;
+            }
+        } catch (IOException e) {
+            //empty
+        }
+
+        //write in likePosts.csv
+        try (FileWriter fw = new FileWriter("likePosts.csv", true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            PrintWriter out = new PrintWriter(bw)) {
+            for(int i = 0; i < likesPosts.size(); i++) {
+                out.println(likesPosts.get(i));
+            }
         } catch (IOException e) {
             //empty
         }
