@@ -4,15 +4,14 @@ import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class Post implements Likeable{
 
     private static int last_id = 0;
-    private final String username;
+    private String username;
     private String id;
-    private final String text;
-
+    private String text;
+    public Post() {}
     public Post(String username) {
         this.username = username;
         this.text = null;
@@ -68,13 +67,28 @@ public class Post implements Likeable{
         }
 
         //creating an array of all posts
+        ArrayList<String> posts = getPostsArray();
+
+        //write in posts.csv
+        try (FileWriter fw = new FileWriter("posts.csv", true);
+             BufferedWriter bw = new BufferedWriter(fw);
+             PrintWriter out = new PrintWriter(bw)) {
+            for (String post : posts) {
+                out.println(post);
+            }
+        } catch (IOException e) {
+            //empty
+        }
+        System.out.println(new CommandResponse("ok", "Post deleted successfully"));
+    }
+
+    private ArrayList<String> getPostsArray() {
         ArrayList<String> posts = new ArrayList<String>();
 
         //read from posts.csv
         try (BufferedReader br = new BufferedReader(new FileReader("posts.csv"))) {
             String line;
             br.readLine();
-            boolean found = false;
             while ((line = br.readLine()) != null) {
                 String[] data = line.split(",");
                 if(!data[0].equals(this.getId())) {
@@ -84,18 +98,7 @@ public class Post implements Likeable{
         } catch (IOException e) {
             //empty
         }
-
-        //write in posts.csv
-        try (FileWriter fw = new FileWriter("posts.csv", true);
-             BufferedWriter bw = new BufferedWriter(fw);
-             PrintWriter out = new PrintWriter(bw)) {
-            for (int i = 0; i < posts.size(); i++) {
-                out.println(posts.get(i));
-            }
-        } catch (IOException e) {
-            //empty
-        }
-        System.out.println(new CommandResponse("ok", "Post deleted successfully"));
+        return posts;
     }
 
     public void createPost() {
@@ -110,7 +113,7 @@ public class Post implements Likeable{
         }
         System.out.println(new CommandResponse("ok", "Post added successfully"));
     }
-    public static void like(String likedBy, String postId) {
+    public void like(String likedBy, String postId) {
         String owner = null;
         //read from posts.csv
         try (BufferedReader br = new BufferedReader(new FileReader("posts.csv"))) {
@@ -159,8 +162,7 @@ public class Post implements Likeable{
         }
         System.out.println(new CommandResponse("ok", "Operation executed successfully"));
     }
-    public static void unlike(String unlikedBy, String postId) {
-        String owner = null;
+    public void unlike(String unlikedBy, String postId) {
         //read from posts.csv
         try (BufferedReader br = new BufferedReader(new FileReader("posts.csv"))) {
             String line;
@@ -170,7 +172,6 @@ public class Post implements Likeable{
                 String[] data = line.split(",");
                 if (data[0].equals(postId)) {
                     found = true;
-                    owner = data[1];
                 }
             }
             if (!found) {
@@ -182,7 +183,7 @@ public class Post implements Likeable{
         }
 
         //creating an array of all the likes of all the posts
-        ArrayList<String> likesPosts = new ArrayList<String>();
+        ArrayList<String> likesPosts = new ArrayList<>();
         //read from likePosts.csv
         try (BufferedReader br = new BufferedReader(new FileReader("likePosts.csv"))) {
             String line;
@@ -208,8 +209,8 @@ public class Post implements Likeable{
         try (FileWriter fw = new FileWriter("likePosts.csv", true);
             BufferedWriter bw = new BufferedWriter(fw);
             PrintWriter out = new PrintWriter(bw)) {
-            for(int i = 0; i < likesPosts.size(); i++) {
-                out.println(likesPosts.get(i));
+            for (String likesPost : likesPosts) {
+                out.println(likesPost);
             }
         } catch (IOException e) {
             //empty

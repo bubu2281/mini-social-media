@@ -2,7 +2,6 @@ package TemaTest;
 
 
 import java.io.*;
-import java.util.stream.StreamSupport;
 
 public class Command {
     String type;
@@ -138,10 +137,9 @@ public class Command {
             return;
         }
         String userToFollow = this.args[3].split(" ")[1].replace("'", "");
-        user.followUserBuUsername(userToFollow);
+        user.followUserByUsername(userToFollow);
 
     }
-
     public void unfollowUserByUsername() {
         User user = this.verifyAuth();
         if (user == null) {
@@ -166,7 +164,7 @@ public class Command {
             return;
         }
         String postId = this.args[3].split(" ")[1].replace("'", "");
-        Post.like(user.getUsername(), postId);
+        new Post().like(user.getUsername(), postId);
     }
     public void unlikePost() {
         User user = this.verifyAuth();
@@ -178,7 +176,7 @@ public class Command {
             return;
         }
         String postId = this.args[3].split(" ")[1].replace("'", "");
-        Post.unlike(user.getUsername(), postId);
+        new Post().unlike(user.getUsername(), postId);
     }
 
     public void commentPost() {
@@ -206,7 +204,7 @@ public class Command {
             return;
         }
         String commentId = this.args[3].split(" ")[1].replace("'", "");
-        Comment.like(user.getUsername(), commentId);
+        new Comment().like(user.getUsername(), commentId);
     }
 
     public void unlikeComment() {
@@ -219,7 +217,7 @@ public class Command {
             return;
         }
         String commentId = this.args[3].split(" ")[1].replace("'", "");
-        Comment.unlike(user.getUsername(), commentId);
+        new Comment().unlike(user.getUsername(), commentId);
     }
     public void deleteCommentById() {
         User user = this.verifyAuth();

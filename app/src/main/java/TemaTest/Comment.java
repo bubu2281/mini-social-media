@@ -9,6 +9,7 @@ public class Comment implements Likeable{
     private String postId;
     private String text;
     private String username;
+    public Comment() {}
     public Comment(String username, String commentId) {
         this.username = username;
         this.commentId = commentId;
@@ -29,10 +30,6 @@ public class Comment implements Likeable{
         this.commentId = Integer.toString(lastId);
     }
 
-    public String getCommentId() {
-        return commentId;
-    }
-
     public String getPostId() {
         return postId;
     }
@@ -49,9 +46,6 @@ public class Comment implements Likeable{
         Comment.lastId = lastId;
     }
 
-    public void setCommentId(String commentId) {
-        this.commentId = commentId;
-    }
 
     public void createComment() {
         if (this.text.length() >= 300) {
@@ -68,7 +62,7 @@ public class Comment implements Likeable{
         }
         System.out.println(new CommandResponse("ok", "Comment added successfully"));
     }
-    public static void like(String likedBy, String commentId) {
+    public void like(String likedBy, String commentId) {
         String owner = null;
         //read from comments.csv
         try (BufferedReader br = new BufferedReader(new FileReader("comments.csv"))) {
@@ -113,7 +107,7 @@ public class Comment implements Likeable{
         }
         System.out.println(new CommandResponse("ok", "Operation executed successfully"));
     }
-    public static void unlike(String likedBy, String commentId) {
+    public void unlike(String likedBy, String commentId) {
         //read from comments.csv
         try (BufferedReader br = new BufferedReader(new FileReader("comments.csv"))) {
             String line;
@@ -133,7 +127,7 @@ public class Comment implements Likeable{
             //empty
         }
         //creating an array of all the liked comments
-        ArrayList<String> likedComments = new ArrayList<String>();
+        ArrayList<String> likedComments = new ArrayList<>();
         //read from likeComments.csv
         try (BufferedReader br = new BufferedReader(new FileReader("likeComments.csv"))) {
             String line;
@@ -158,8 +152,8 @@ public class Comment implements Likeable{
         try (FileWriter fw = new FileWriter("likeComments.csv", true);
              BufferedWriter bw = new BufferedWriter(fw);
              PrintWriter out = new PrintWriter(bw)) {
-            for (int i = 0; i < likedComments.size(); i++) {
-                out.println(likedComments.get(i));
+            for (String likedComment : likedComments) {
+                out.println(likedComment);
             }
         } catch (IOException e) {
             //empty
@@ -186,7 +180,7 @@ public class Comment implements Likeable{
             //empty
         }
         //creating an array of all comments
-        ArrayList<String> comments = new ArrayList<String>();
+        ArrayList<String> comments = new ArrayList<>();
         //read from comments.csv
         try (BufferedReader br = new BufferedReader(new FileReader("comments.csv"))) {
             String line;
@@ -204,8 +198,8 @@ public class Comment implements Likeable{
         try (FileWriter fw = new FileWriter("comments.csv", true);
              BufferedWriter bw = new BufferedWriter(fw);
              PrintWriter out = new PrintWriter(bw)) {
-            for (int i = 0; i < comments.size(); i++) {
-                out.println(comments.get(i));
+            for (String comment : comments) {
+                out.println(comment);
             }
         } catch (IOException e) {
             //empty

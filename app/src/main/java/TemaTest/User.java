@@ -6,8 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class User {
-    private static int numberOfUsers = 0;
+public class User extends UserActions {
     private final String username;
     private final String password;
     public User(String username, String password) {
@@ -24,7 +23,7 @@ public class User {
     }
 
 
-    public void followUserBuUsername(String userToFollow) {
+    public void followUserByUsername(String userToFollow) {
         //read from users.csv
         try (BufferedReader br = new BufferedReader(new FileReader("users.csv"))) {
             String line;
@@ -106,7 +105,7 @@ public class User {
         }
 
         //creating an array of all the followers
-        ArrayList<String> followers = new ArrayList<String>();
+        ArrayList<String> followers = new ArrayList<>();
         //read from follow.csv
         try (BufferedReader br = new BufferedReader(new FileReader("follow.csv"))) {
             String line;
@@ -124,8 +123,8 @@ public class User {
         try (FileWriter fw = new FileWriter("follow.csv", true);
              BufferedWriter bw = new BufferedWriter(fw);
              PrintWriter out = new PrintWriter(bw)) {
-            for (int i = 0; i < followers.size(); i++) {
-                out.println(followers.get(i));
+            for (String follower : followers) {
+                out.println(follower);
             }
         } catch (IOException e) {
             //empty
@@ -159,11 +158,10 @@ public class User {
             //empty
         }
         System.out.println(new CommandResponse("ok", "User created successfully"));
-        numberOfUsers += 1;
     }
     public void getFollowing() {
         //array of following
-        ArrayList<String> following = new ArrayList<String>();
+        ArrayList<String> following = new ArrayList<>();
         //read from follow.csv
         try (BufferedReader br = new BufferedReader(new FileReader("follow.csv"))) {
             String line;
@@ -200,7 +198,7 @@ public class User {
             //empty
         }
         //array of followers
-        ArrayList<String> followers = new ArrayList<String>();
+        ArrayList<String> followers = new ArrayList<>();
         //read from follow.csv
         try (BufferedReader br = new BufferedReader(new FileReader("follow.csv"))) {
             String line;
@@ -222,12 +220,11 @@ public class User {
         LocalDate date = LocalDate.now();
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         //creating an array of all the posts of the people the user follows
-        ArrayList<Post> posts = new ArrayList<Post>();
+        ArrayList<Post> posts = new ArrayList<>();
         //read from follow.csv
         try (BufferedReader br = new BufferedReader(new FileReader("follow.csv"))) {
             String line;
             br.readLine();
-            boolean found = false;
             while ((line = br.readLine()) != null) {
                 String[] data = line.split(",");
                 //searching for each person that the user follows
@@ -287,7 +284,7 @@ public class User {
         LocalDate date = LocalDate.now();
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         //creating an array of all the posts of the userToList
-        ArrayList<Post> posts = new ArrayList<Post>();
+        ArrayList<Post> posts = new ArrayList<>();
         //read from posts.csv
         try (BufferedReader br = new BufferedReader(new FileReader("posts.csv"))) {
             String line;
@@ -362,7 +359,6 @@ public class User {
         try (BufferedReader br = new BufferedReader(new FileReader("likePosts.csv"))) {
             String line;
             br.readLine();
-            boolean found = false;
             while ((line = br.readLine()) != null) {
                 String[] data = line.split(",");
                 if(data[0].equals(postIdToDetail)) {
@@ -372,11 +368,12 @@ public class User {
         } catch (IOException e) {
             //empty
         }
+        assert postToDetail != null;
         System.out.print("{'status':'ok','message': [{'post_text':'" + postToDetail.getText() +
                 "','post_date':'" + date.format(dateFormatter) + "','username':'" + postToDetail.getUsername() +
                 "','number_of_likes':'" + numberOfLikes + "','comments': [");
         //creating an array of all the comments of the post
-        ArrayList<Comment> comments = new ArrayList<Comment>();
+        ArrayList<Comment> comments = new ArrayList<>();
         //read from comments.csv
         try (BufferedReader br = new BufferedReader(new FileReader("comments.csv"))) {
             String line;
@@ -416,9 +413,7 @@ public class User {
         System.out.println("] }] }");
     }
     public static void getMostLikedUsers() {
-        LocalDate date = LocalDate.now();
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        HashMap<String, Integer> userLikes = new HashMap<String, Integer>();
+        HashMap<String, Integer> userLikes = new HashMap<>();
         //read from users.csv
         try (BufferedReader br = new BufferedReader(new FileReader("users.csv"))) {
             String line;
@@ -479,9 +474,7 @@ public class User {
         }
     }
     public static void getMostFollowedUsers() {
-        LocalDate date = LocalDate.now();
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        HashMap<String, Integer> userFollows = new HashMap<String, Integer>();
+        HashMap<String, Integer> userFollows = new HashMap<>();
         //read from users.csv
         try (BufferedReader br = new BufferedReader(new FileReader("users.csv"))) {
             String line;
