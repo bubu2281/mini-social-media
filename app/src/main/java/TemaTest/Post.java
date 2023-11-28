@@ -1,6 +1,8 @@
 package TemaTest;
 
 import java.io.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class Post implements Likeable{
@@ -21,6 +23,11 @@ public class Post implements Likeable{
         this.username = username;
         this.text = text;
         this.id = Integer.toString(last_id);
+    }
+    public Post(String id, String username, String text) {
+        this.username = username;
+        this.text = text;
+        this.id = id;
     }
 
     public String getText() {
@@ -129,7 +136,7 @@ public class Post implements Likeable{
             br.readLine();
             while ((line = br.readLine()) != null) {
                 String[] data = line.split(",");
-                if (data[0].equals(postId) && data[1].equals(owner)) {
+                if (data[0].equals(postId) && data[1].equals(owner) && data[2].equals(likedBy)) {
                     System.out.println(new CommandResponse("error", "The post identifier to like was not valid"));
                     return;
                 }
@@ -208,4 +215,58 @@ public class Post implements Likeable{
         }
         System.out.println(new CommandResponse("ok", "Operation executed successfully"));
     }
+    public static void getMostLikedPosts() {
+        LocalDate date = LocalDate.now();
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        int[] frequencyArray = new int[last_id + 1];
+        //read from likePosts.csv
+        try (BufferedReader br = new BufferedReader(new FileReader("likePosts.csv"))) {
+            String line;
+            br.readLine();
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split(",");
+                frequencyArray[Integer.parseInt(data[0])] += 1;
+            }
+        } catch (IOException e) {
+            //empty
+        }
+        System.out.print("{'status':'ok','message': [");
+
+        for (int i = 0; (i < 5); i++) {
+            int max = -1;
+            int maxId = -1;
+            for(int j = 1; j < frequencyArray.length; j++) {
+                if (max < frequencyArray[j]) {
+                    max = frequencyArray[j];
+                    maxId = j;
+                }
+            }
+            Post maxPost = null;
+            //read from posts.csv
+            try (BufferedReader br = new BufferedReader(new FileReader("posts.csv"))) {
+                String line;
+                br.readLine();
+                while ((line = br.readLine()) != null) {
+                    String[] data = line.split(",");
+                    if (data[0].equals(Integer.toString(maxId))) {
+                        maxPost = new Post(data[0], data[1], data[2]);
+                    }
+                }
+            } catch (IOException e) {
+                //empty
+            }
+            if (maxPost == null) {
+                return;
+            }
+            if (i != 0) {
+                System.out.print(",");
+            }
+            System.out.print("{'post_id':'" + maxPost.getId() + "','post_text':'" +
+                    maxPost.getText() + "','post_date':'" + date.format(dateFormatter) +
+                    "','username':'" + maxPost.getUsername() + "','number_of_likes':'" + frequencyArray[maxId] +
+                    "'}");
+            frequencyArray[maxId] = -1;
+        }
+    }
+
 }

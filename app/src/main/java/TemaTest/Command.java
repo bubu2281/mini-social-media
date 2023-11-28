@@ -2,6 +2,7 @@ package TemaTest;
 
 
 import java.io.*;
+import java.util.stream.StreamSupport;
 
 public class Command {
     String type;
@@ -56,6 +57,18 @@ public class Command {
             }
             if (this.args[0].equals("-get-followers")) {
                 this.getFollowers();
+            }
+            if (this.args[0].equals("-get-followings-posts")) {
+                this.getFollowingsPosts();
+            }
+            if (this.args[0].equals("-get-user-posts")) {
+                this.getUserPosts();
+            }
+            if (this.args[0].equals("-get-post-details")) {
+                this.getPostDetails();
+            }
+            if (this.args[0].equals("-get-most-liked-posts")) {
+                this.getMostLikedPosts();
             }
         }
     }
@@ -231,6 +244,49 @@ public class Command {
         }
         String userToList = this.args[3].split(" ")[1].replace("'", "");
         user.getFollowers(userToList);
+    }
+
+    public void getFollowingsPosts() {
+        User user = this.verifyAuth();
+        if (user == null) {
+            return;
+        }
+        user.getFollowingsPosts();
+    }
+
+    public void getUserPosts() {
+        User user = this.verifyAuth();
+        if (user == null) {
+            return;
+        }
+        if (this.args.length < 4) {
+            System.out.println(new CommandResponse("error", "No username to list posts was provided"));
+            return;
+        }
+        String userToList = this.args[3].split(" ")[1].replace("'", "");
+        user.getUserPosts(userToList);
+    }
+
+    public void getPostDetails() {
+        User user = this.verifyAuth();
+        if (user == null) {
+            return;
+        }
+        if (this.args.length < 4) {
+            System.out.println(new CommandResponse("error", "No post identifier was provided"));
+            return;
+        }
+        String postIdToDetail = this.args[3].split(" ")[1].replace("'", "");
+        user.getPostDetails(postIdToDetail);
+    }
+
+    public void getMostLikedPosts() {
+        User user = this.verifyAuth();
+        if (user == null) {
+            return;
+        }
+        Post.getMostLikedPosts();
+        System.out.print(" ]}");
     }
 
     public User verifyAuth() {

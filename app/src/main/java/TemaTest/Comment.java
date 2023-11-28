@@ -15,12 +15,34 @@ public class Comment implements Likeable{
         this.text = null;
         this.postId = null;
     }
+    public Comment(String id, String postId, String username, String text) {
+        this.commentId = id;
+        this.username = username;
+        this.postId = postId;
+        this.text = text;
+    }
     public Comment(String username, String postId, String text) {
         lastId += 1;
         this.username = username;
         this.postId = postId;
         this.text = text;
         this.commentId = Integer.toString(lastId);
+    }
+
+    public String getCommentId() {
+        return commentId;
+    }
+
+    public String getPostId() {
+        return postId;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public static void setLastId(int lastId) {
