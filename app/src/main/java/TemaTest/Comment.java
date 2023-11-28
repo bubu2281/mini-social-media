@@ -95,7 +95,7 @@ public class Comment implements Likeable{
             br.readLine();
             while ((line = br.readLine()) != null) {
                 String[] data = line.split(",");
-                if (data[0].equals(commentId) && data[2].equals(likedBy)) {
+                if (data[0].equals(commentId) && data[1].equals(owner) && data[2].equals(likedBy)) {
                     System.out.println(new CommandResponse("error", "The comment identifier to like was not valid"));
                     return;
                 }

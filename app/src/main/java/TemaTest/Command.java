@@ -70,6 +70,15 @@ public class Command {
             if (this.args[0].equals("-get-most-liked-posts")) {
                 this.getMostLikedPosts();
             }
+            if (this.args[0].equals("-get-most-commented-posts")) {
+                this.getMostCommentedPosts();
+            }
+            if (this.args[0].equals("-get-most-liked-users")) {
+                this.getMostLikedUsers();
+            }
+            if (this.args[0].equals("-get-most-followed-users")) {
+                this.getMostFollowedUsers();
+            }
         }
     }
     public void createUser() {
@@ -286,6 +295,33 @@ public class Command {
             return;
         }
         Post.getMostLikedPosts();
+        System.out.print(" ]}");
+    }
+
+    public void getMostCommentedPosts() {
+        User user = this.verifyAuth();
+        if (user == null) {
+            return;
+        }
+        Post.getMostCommentedPosts();
+        System.out.print("]}");
+    }
+
+    public void getMostLikedUsers() {
+        User user = this.verifyAuth();
+        if (user == null) {
+            return;
+        }
+        User.getMostLikedUsers();
+        System.out.print("]}");
+    }
+
+    public void getMostFollowedUsers() {
+        User user = this.verifyAuth();
+        if (user == null) {
+            return;
+        }
+        User.getMostFollowedUsers();
         System.out.print(" ]}");
     }
 

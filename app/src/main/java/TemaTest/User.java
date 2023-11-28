@@ -4,8 +4,10 @@ import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class User {
+    private static int numberOfUsers = 0;
     private final String username;
     private final String password;
     public User(String username, String password) {
@@ -157,6 +159,7 @@ public class User {
             //empty
         }
         System.out.println(new CommandResponse("ok", "User created successfully"));
+        numberOfUsers += 1;
     }
     public void getFollowing() {
         //array of following
@@ -411,5 +414,120 @@ public class User {
             }
         }
         System.out.println("] }] }");
+    }
+    public static void getMostLikedUsers() {
+        LocalDate date = LocalDate.now();
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        HashMap<String, Integer> userLikes = new HashMap<String, Integer>();
+        //read from users.csv
+        try (BufferedReader br = new BufferedReader(new FileReader("users.csv"))) {
+            String line;
+            br.readLine();
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split(",");
+                userLikes.put(data[0], 0);
+            }
+        } catch (IOException e) {
+            //empty
+        }
+        //read from likePosts.csv
+        try (BufferedReader br = new BufferedReader(new FileReader("likePosts.csv"))) {
+            String line;
+            br.readLine();
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split(",");
+                userLikes.put(data[1], userLikes.get(data[1]) + 1);
+            }
+        } catch (IOException e) {
+            //empty
+        }
+        //read from likeComments.csv
+        try (BufferedReader br = new BufferedReader(new FileReader("likeComments.csv"))) {
+            String line;
+            br.readLine();
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split(",");
+                userLikes.put(data[1], userLikes.get(data[1]) + 1);
+            }
+        } catch (IOException e) {
+            //empty
+        }
+        System.out.print("{'status':'ok','message': [");
+        for (int i = 0; (i < 5); i++) {
+            int max = -1;
+            String maxUsername = null;
+            //read from users.csv
+            try (BufferedReader br = new BufferedReader(new FileReader("users.csv"))) {
+                String line;
+                br.readLine();
+                while ((line = br.readLine()) != null) {
+                    String[] data = line.split(",");
+                    if (max < userLikes.get(data[0])) {
+                        max = userLikes.get(data[0]);
+                        maxUsername = data[0];
+                    }
+                }
+            } catch (IOException e) {
+                //empty
+            }
+            if (i != 0) {
+                System.out.print(",");
+            }
+            System.out.print("{'username':'" + maxUsername + "','number_of_likes':'" + userLikes.get(maxUsername) +
+                    "'}");
+            userLikes.put(maxUsername, -1);
+        }
+    }
+    public static void getMostFollowedUsers() {
+        LocalDate date = LocalDate.now();
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        HashMap<String, Integer> userFollows = new HashMap<String, Integer>();
+        //read from users.csv
+        try (BufferedReader br = new BufferedReader(new FileReader("users.csv"))) {
+            String line;
+            br.readLine();
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split(",");
+                userFollows.put(data[0], 0);
+            }
+        } catch (IOException e) {
+            //empty
+        }
+        //read from follow.csv
+        try (BufferedReader br = new BufferedReader(new FileReader("follow.csv"))) {
+            String line;
+            br.readLine();
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split(",");
+                userFollows.put(data[1], userFollows.get(data[1]) + 1);
+            }
+        } catch (IOException e) {
+            //empty
+        }
+        System.out.print("{'status':'ok','message': [");
+        for (int i = 0; (i < 5); i++) {
+            int max = -1;
+            String maxUsername = null;
+            //read from users.csv
+            try (BufferedReader br = new BufferedReader(new FileReader("users.csv"))) {
+                String line;
+                br.readLine();
+                while ((line = br.readLine()) != null) {
+                    String[] data = line.split(",");
+                    if (max < userFollows.get(data[0])) {
+                        max = userFollows.get(data[0]);
+                        maxUsername = data[0];
+                    }
+                }
+            } catch (IOException e) {
+                //empty
+            }
+            if (i != 0) {
+                System.out.print(",");
+            }
+            System.out.print("{'username':'" + maxUsername + "','number_of_followers':'" + userFollows.get(maxUsername) +
+                    "'}");
+            userFollows.put(maxUsername, -1);
+        }
     }
 }
